@@ -8,7 +8,7 @@ describe('RuntimeTemplateEmitter', () => {
 
   it('prefixes the generated-code header and renames the package clause', () => {
     expect(emitter.emit('client.go', 'package jmapsdk\n\nfunc F() {}\n')).toBe(
-      '// Code generated from mailbox-idl/jmap. DO NOT EDIT.\n\npackage otherpkg\n\nfunc F() {}\n',
+      '// Code generated from mail-server-idl/jmap. DO NOT EDIT.\n\npackage otherpkg\n\nfunc F() {}\n',
     );
   });
 

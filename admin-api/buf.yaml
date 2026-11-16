@@ -2,7 +2,7 @@
 version: v2
 modules:
   - path: proto
-    name: buf.build/serverlessinbox/mailbox-idl-admin-api
+    name: buf.build/serverlessinbox/mail-server-idl-admin-api
 lint:
   use:
     - STANDARD

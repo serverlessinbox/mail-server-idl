@@ -17,7 +17,7 @@ managed:
     - file_option: go_package
       path: push_ws.proto
       value: @GO_PACKAGE_PREFIX@/pushws;pushwsv1
-      module: buf.build/serverlessinbox/mailbox-idl-push-ws
+      module: buf.build/serverlessinbox/mail-server-idl-push-ws
 plugins:
   - local: ../tools/bin/protoc-gen-go
     out: .

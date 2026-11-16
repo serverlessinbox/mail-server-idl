@@ -22,17 +22,17 @@ export class GoTemplates {
 
   /** The first line of files generated from JSON Schemas. */
   public schemaFileHeader(): string {
-    return '// Code generated from mailbox-idl/jmap JSON Schema. DO NOT EDIT.';
+    return '// Code generated from mail-server-idl/jmap JSON Schema. DO NOT EDIT.';
   }
 
   /** The first line of files generated from the manifest. */
   public manifestFileHeader(): string {
-    return '// Code generated from mailbox-idl/jmap manifest. DO NOT EDIT.';
+    return '// Code generated from mail-server-idl/jmap manifest. DO NOT EDIT.';
   }
 
   /** The header written above a copied runtime template, including the blank line that follows it. */
   public runtimeFileHeader(): string {
-    return '// Code generated from mailbox-idl/jmap. DO NOT EDIT.\n\n';
+    return '// Code generated from mail-server-idl/jmap. DO NOT EDIT.\n\n';
   }
 
   /** The package clause. */

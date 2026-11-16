@@ -2,7 +2,7 @@ version: v2
 modules:
 
   - path: proto
-    name: buf.build/serverlessinbox/mailbox-idl-push-ws
+    name: buf.build/serverlessinbox/mail-server-idl-push-ws
 lint:
 
   use:

@@ -25,7 +25,7 @@ describe('CoreTypesEmitter', () => {
   it('starts with the generated header and the package clause', () => {
     const { source } = emitterFor(coreDefs).emit();
 
-    expect(source.startsWith('// Code generated from mailbox-idl/jmap JSON Schema. DO NOT EDIT.\n\npackage jmapsdk\n\n')).toBe(true);
+    expect(source.startsWith('// Code generated from mail-server-idl/jmap JSON Schema. DO NOT EDIT.\n\npackage jmapsdk\n\n')).toBe(true);
   });
 
   it('emits Thread ahead of Email and Keywords as an alias', () => {

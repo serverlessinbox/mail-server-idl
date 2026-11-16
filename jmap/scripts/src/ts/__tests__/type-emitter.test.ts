@@ -42,6 +42,6 @@ describe('TypeEmitter', () => {
   it('starts the file with the generated-code banner', async () => {
     const source = await emitSample('Sample.get.args');
 
-    expect(source.startsWith('/* Code generated from mailbox-idl/jmap JSON Schema. DO NOT EDIT. */')).toBe(true);
+    expect(source.startsWith('/* Code generated from mail-server-idl/jmap JSON Schema. DO NOT EDIT. */')).toBe(true);
   });
 });

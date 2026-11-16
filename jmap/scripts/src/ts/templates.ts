@@ -15,9 +15,9 @@ export interface MethodsFileParts {
  */
 export class TsTemplates {
   /** Banner passed to json-schema-to-typescript for the per-schema type files. */
-  public readonly schemaBanner = '/* Code generated from mailbox-idl/jmap JSON Schema. DO NOT EDIT. */';
+  public readonly schemaBanner = '/* Code generated from mail-server-idl/jmap JSON Schema. DO NOT EDIT. */';
 
-  private readonly manifestBanner = '/* Code generated from mailbox-idl/jmap manifest. DO NOT EDIT. */';
+  private readonly manifestBanner = '/* Code generated from mail-server-idl/jmap manifest. DO NOT EDIT. */';
 
   /** Contents of client.ts. */
   public clientFile(): string {
@@ -236,7 +236,7 @@ export class TsTemplates {
         ? 'export function validateResponse(_data: unknown): boolean { return true; }\n'
         : `export function validateResponse(data: unknown): boolean { const ok = ${functionName}(data); validateResponse.errors = ${functionName}.errors; return ok; }\n`;
     return (
-      '/* Code generated from mailbox-idl/jmap JSON Schema. DO NOT EDIT. */\n' +
+      '/* Code generated from mail-server-idl/jmap JSON Schema. DO NOT EDIT. */\n' +
       '/* eslint-disable */\n' +
       '// @ts-nocheck\n' +
       '// AJV standalone validator — compiled at code generation time, no runtime AJV dependency.\n\n' +
@@ -259,7 +259,7 @@ export class TsTemplates {
   /** Contents of validators.ts. */
   public validatorsFile(importLines: readonly string[], mapEntries: readonly string[]): string {
     return (
-      '/* Code generated from mailbox-idl/jmap JSON Schema. DO NOT EDIT. */\n\n' +
+      '/* Code generated from mail-server-idl/jmap JSON Schema. DO NOT EDIT. */\n\n' +
       importLines.join('\n') +
       '\n\n' +
       'export const responseValidators: Record<string, (data: unknown) => boolean> = {\n' +

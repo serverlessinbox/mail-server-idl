@@ -19,7 +19,7 @@ describe('MethodFileEmitter', () => {
     const schema: JsonSchemaNode = { description: 'Foo/get args', required: ['accountId'], properties: { accountId: { type: 'string' } } };
 
     expect(emitter.emit(schema, 'FooGetArgs', none)).toBe(
-      '// Code generated from mailbox-idl/jmap JSON Schema. DO NOT EDIT.\n\npackage jmapsdk\n\n' +
+      '// Code generated from mail-server-idl/jmap JSON Schema. DO NOT EDIT.\n\npackage jmapsdk\n\n' +
         '// FooGetArgs Foo/get args\ntype FooGetArgs struct {\n\tAccountID string `json:"accountId"`\n}\n',
     );
   });

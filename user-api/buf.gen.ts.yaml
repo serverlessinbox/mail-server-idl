@@ -22,20 +22,20 @@ managed:
   override:
     - file_option: go_package
       path: preferences.proto
-      value: github.com/serverlessinbox/mailbox-idl/user-api/userapi;userapiv1
-      module: buf.build/serverlessinbox/mailbox-idl-user-api
+      value: github.com/serverlessinbox/mail-server-idl/user-api/userapi;userapiv1
+      module: buf.build/serverlessinbox/mail-server-idl-user-api
     - file_option: go_package
       path: jobs.proto
-      value: github.com/serverlessinbox/mailbox-idl/user-api/userapi;userapiv1
-      module: buf.build/serverlessinbox/mailbox-idl-user-api
+      value: github.com/serverlessinbox/mail-server-idl/user-api/userapi;userapiv1
+      module: buf.build/serverlessinbox/mail-server-idl-user-api
     - file_option: go_package
       path: personal_access_tokens.proto
-      value: github.com/serverlessinbox/mailbox-idl/user-api/userapi;userapiv1
-      module: buf.build/serverlessinbox/mailbox-idl-user-api
+      value: github.com/serverlessinbox/mail-server-idl/user-api/userapi;userapiv1
+      module: buf.build/serverlessinbox/mail-server-idl-user-api
     - file_option: go_package
       path: common.proto
-      value: github.com/serverlessinbox/mailbox-idl/user-api/userapi/common;commonv1
-      module: buf.build/serverlessinbox/mailbox-idl-user-api
+      value: github.com/serverlessinbox/mail-server-idl/user-api/userapi/common;commonv1
+      module: buf.build/serverlessinbox/mail-server-idl-user-api
 plugins:
   - remote: buf.build/bufbuild/es:v2.15.0
     out: .

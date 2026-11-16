@@ -17,19 +17,19 @@ managed:
     - file_option: go_package
       path: preferences.proto
       value: @GO_PACKAGE_PREFIX@/userapi;userapiv1
-      module: buf.build/serverlessinbox/mailbox-idl-user-api
+      module: buf.build/serverlessinbox/mail-server-idl-user-api
     - file_option: go_package
       path: jobs.proto
       value: @GO_PACKAGE_PREFIX@/userapi;userapiv1
-      module: buf.build/serverlessinbox/mailbox-idl-user-api
+      module: buf.build/serverlessinbox/mail-server-idl-user-api
     - file_option: go_package
       path: personal_access_tokens.proto
       value: @GO_PACKAGE_PREFIX@/userapi;userapiv1
-      module: buf.build/serverlessinbox/mailbox-idl-user-api
+      module: buf.build/serverlessinbox/mail-server-idl-user-api
     - file_option: go_package
       path: common.proto
       value: @GO_PACKAGE_PREFIX@/userapi/common;commonv1
-      module: buf.build/serverlessinbox/mailbox-idl-user-api
+      module: buf.build/serverlessinbox/mail-server-idl-user-api
 plugins:
   - local: ../tools/bin/protoc-gen-go
     out: .

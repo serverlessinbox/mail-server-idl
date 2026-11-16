@@ -26,7 +26,7 @@ describe('ValidatorEmitter', () => {
   it('marks the file as generated and exempt from linting and type checks', () => {
     const source = emitter.emitValidator(responseSchema);
 
-    expect(source.startsWith('/* Code generated from mailbox-idl/jmap JSON Schema. DO NOT EDIT. */\n/* eslint-disable */\n// @ts-nocheck\n')).toBe(true);
+    expect(source.startsWith('/* Code generated from mail-server-idl/jmap JSON Schema. DO NOT EDIT. */\n/* eslint-disable */\n// @ts-nocheck\n')).toBe(true);
   });
 
   it('imports and maps the validator of every method under its alias', () => {
