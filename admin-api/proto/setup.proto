@@ -164,10 +164,45 @@ message DismissWelcomeRequest {
 
 message DismissWelcomeResponse {}
 
+// SesMailType is the kind of mail the account sends, as stated in a production-access request.
+enum SesMailType {
+  SES_MAIL_TYPE_UNSPECIFIED = 0;
+  SES_MAIL_TYPE_TRANSACTIONAL = 1;  // Transactional mail
+  SES_MAIL_TYPE_MARKETING = 2;      // Marketing mail
+}
+
+// SesContactLanguage is the language AWS uses when it contacts the sender.
+enum SesContactLanguage {
+  SES_CONTACT_LANGUAGE_UNSPECIFIED = 0;  // Unset; sent as English
+  SES_CONTACT_LANGUAGE_EN = 1;           // English
+  SES_CONTACT_LANGUAGE_JA = 2;           // Japanese
+}
+
+// RequestSesProductionAccessRequest carries the details AWS needs to review a move out of the SES sandbox.
+message RequestSesProductionAccessRequest {
+  // Kind of mail the account sends. Required.
+  SesMailType mail_type = 1 [(validate.rules).enum = {defined_only: true, not_in: [0]}];
+
+  // Public website of the sender, which AWS reviews. Required; must be an http or https URL.
+  string website_url = 2 [(validate.rules).string = {min_len: 1, max_len: 1000, uri: true, pattern: "^https?://"}];
+
+  // Extra addresses AWS may contact about the review. Up to 4, each unique.
+  repeated string additional_contact_emails = 3 [(validate.rules).repeated = {max_items: 4, unique: true, items: {string: {email: true, max_len: 320}}}];
+
+  // Language AWS uses when it contacts the sender. Unset means English.
+  optional SesContactLanguage contact_language = 4 [(validate.rules).enum.defined_only = true];
+}
+
+// RequestSesProductionAccessResponse is empty; callers re-read status to see the outcome.
+message RequestSesProductionAccessResponse {}
+
 service SetupService {
   // GetReadiness returns the aggregated onboarding/health snapshot. Read-only.
   rpc GetReadiness(GetReadinessRequest) returns (GetReadinessResponse);
 
   // DismissWelcome persists the deployment-wide Welcome graduation flag.
   rpc DismissWelcome(DismissWelcomeRequest) returns (DismissWelcomeResponse);
+
+  // RequestSesProductionAccess submits a production-access review request to AWS for this installation.
+  rpc RequestSesProductionAccess(RequestSesProductionAccessRequest) returns (RequestSesProductionAccessResponse);
 }

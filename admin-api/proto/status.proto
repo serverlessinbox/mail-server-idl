@@ -84,6 +84,16 @@ message SesReputationStatus {
   optional string window = 6 [(validate.rules).string.max_len = 32];
 }
 
+// SesReviewStatus is the state of the SES production-access review.
+enum SesReviewStatus {
+  SES_REVIEW_STATUS_UNSPECIFIED = 0;
+  SES_REVIEW_STATUS_NONE = 1;     // AWS reports no review details
+  SES_REVIEW_STATUS_PENDING = 2;  // The review is in progress
+  SES_REVIEW_STATUS_GRANTED = 3;  // AWS granted production access
+  SES_REVIEW_STATUS_DENIED = 4;   // AWS denied production access
+  SES_REVIEW_STATUS_FAILED = 5;   // The review ended in failure
+}
+
 message SesAccountStatus {
   // True when SES production access is enabled (i.e. not in sandbox).
   optional bool production_access_enabled = 1;
@@ -103,6 +113,13 @@ message SesAccountStatus {
 
   // Best-effort reputation snapshot.
   SesReputationStatus reputation = 6;
+
+  // SES production-access review state. Set whenever the account read succeeds;
+  // NONE when AWS reports no review details. Absent means an older backend.
+  optional SesReviewStatus review_status = 7;
+
+  // SES support case id of the production-access review. Set only when AWS returns one.
+  optional string review_case_id = 8 [(validate.rules).string.max_len = 64];
 }
 
 message AdminStatus {
