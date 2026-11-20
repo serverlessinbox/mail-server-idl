@@ -54,6 +54,9 @@ enum DelegateAccessLevel {
   DELEGATE_ACCESS_LEVEL_UNSPECIFIED = 0;
   DELEGATE_ACCESS_LEVEL_READ_ONLY = 1;   // Read-only access to mailbox contents
   DELEGATE_ACCESS_LEVEL_READ_WRITE = 2;  // Full read/write access to mailbox contents
+  // Manages the account: the owner's rights on its mail, contacts and Sieve scripts.
+  // Not administrator rights. Shared accounts only.
+  DELEGATE_ACCESS_LEVEL_MANAGE = 3;
 }
 
 // ============================================
