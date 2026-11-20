@@ -10,8 +10,25 @@
     "PatchObject": {
       "type": "object",
       "description": "JMAP PatchObject: keys are JSON Pointers to properties; values are the new values (or null to remove).",
+      "properties": {
+        "keywords": {
+          "description": "Replacement keywords; each value is true. null resets to the default empty set (RFC 8620 §5.3).",
+          "anyOf": [
+            { "type": "object", "additionalProperties": { "type": "boolean", "enum": [true] } },
+            { "type": "null" }
+          ]
+        },
+        "mailboxIds": {
+          "type": "object",
+          "description": "Replacement mailbox set; each value is true. At least one entry (RFC 8621 §4.1.1).",
+          "minProperties": 1,
+          "additionalProperties": { "type": "boolean", "enum": [true] }
+        }
+      },
       "patternProperties": {
-        "^/": {}
+        "^/": {},
+        "^keywords/": { "description": "Set (true) or remove (null) one keyword.", "enum": [true, null] },
+        "^mailboxIds/": { "description": "Add (true) or remove (null) one mailbox.", "enum": [true, null] }
       }
     }
   },
@@ -24,7 +41,7 @@
       "type": "object",
       "description": "Map of client-assigned creation ids to Email objects.",
       "propertyNames": { "$ref": "#/$defs/CreationId" },
-      "additionalProperties": { "$ref": "../core/types.schema.json#/$defs/Email" }
+      "additionalProperties": { "$ref": "../core/types.schema.json#/$defs/EmailCreate" }
     },
 
     "update": {

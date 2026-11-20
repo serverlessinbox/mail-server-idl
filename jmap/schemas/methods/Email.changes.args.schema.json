@@ -6,7 +6,10 @@
   "properties": {
     "accountId": { "$ref": "../core/types.schema.json#/$defs/AccountId", "description": "The account to fetch changes for." },
     "sinceState": { "type": "string", "minLength": 1, "description": "The state string from the last Email/get or Email/changes response. Only changes after this state are returned." },
-    "maxChanges": { "type": "integer", "minimum": 0, "description": "Maximum number of change records to return. Omit for no limit. If exceeded, hasMoreChanges will be true." }
+    "maxChanges": {
+      "anyOf": [{ "type": "integer", "minimum": 1, "maximum": 9007199254740991 }, { "type": "null" }],
+      "description": "Maximum number of change records to return (positive, RFC 8620 §5.2). Omit or null for no limit. If exceeded, hasMoreChanges will be true."
+    }
   },
   "required": ["accountId", "sinceState"]
 }

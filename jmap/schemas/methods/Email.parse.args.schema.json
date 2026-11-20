@@ -19,7 +19,7 @@
     "bodyProperties": {
       "type": ["array", "null"],
       "items": { "type": "string" },
-      "description": "Body part properties to include."
+      "description": "Body part properties to include. Defaults to partId, blobId, size, name, type, charset, disposition, cid, language, location (RFC 8621 §4.2); headers and subParts are not in the default."
     },
     "fetchTextBodyValues": {
       "type": ["boolean", "null"],

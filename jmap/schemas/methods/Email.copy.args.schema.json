@@ -19,16 +19,22 @@
           "id": { "$ref": "../core/types.schema.json#/$defs/Id", "description": "The id of the Email in the source account." },
           "mailboxIds": {
             "type": "object",
-            "description": "Map of Mailbox id to true in the destination account.",
+            "description": "Map of Mailbox id to true in the destination account. At least one entry (RFC 8621 §4.1.1).",
+            "minProperties": 1,
             "additionalProperties": { "type": "boolean", "enum": [true] }
           },
           "keywords": {
             "type": "object",
             "description": "Keywords to set on the copied email.",
             "additionalProperties": { "type": "boolean", "enum": [true] }
+          },
+          "receivedAt": {
+            "$ref": "../core/types.schema.json#/$defs/UTCDate",
+            "description": "UTCDate override for receivedAt; omitted keeps the source email's value."
           }
         },
-        "required": ["id", "mailboxIds"]
+        "required": ["id", "mailboxIds"],
+        "additionalProperties": false
       }
     },
     "onSuccessDestroyOriginal": {

@@ -17,7 +17,7 @@
     },
     "bodyProperties": {
       "type": "array",
-      "description": "Properties to include for each body part object. Defaults to a standard set.",
+      "description": "Properties to include for each body part object. Defaults to partId, blobId, size, name, type, charset, disposition, cid, language, location (RFC 8621 §4.2); headers and subParts are not in the default.",
       "items": { "type": "string", "minLength": 1 }
     },
     "fetchTextBodyValues": { "type": "boolean", "description": "If true, fetch the value of text/plain body parts." },
