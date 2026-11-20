@@ -1,7 +1,11 @@
 // Pins core_types.go assembly: definition order, the Keywords alias, the
 // encoding/json import that allOf structs force, and the reporting of listed
 // definitions the core schema no longer defines.
+import Ajv2020 from 'ajv/dist/2020';
+import * as path from 'path';
+
 import type { JsonSchemaDefinitions } from '../../schema/json-schema';
+import { SchemaLoader } from '../../schema/schema-loader';
 import { CoreTypesEmitter } from '../core-types-emitter';
 import { GoNaming } from '../go-naming';
 import { GoStructEmitter } from '../go-struct-emitter';
@@ -50,6 +54,20 @@ describe('CoreTypesEmitter', () => {
     const { source } = emitterFor(withAllOf).emit();
     expect(source).toContain('package jmapsdk\n\nimport "encoding/json"\n\n');
     expect(source).toContain('type Mailbox struct {\n\tEmail\n');
+  });
+
+  it('emits or skips every definition of the real core schema', async () => {
+    const jmapRoot = path.resolve(__dirname, '..', '..', '..', '..');
+    const coreSchema = await new SchemaLoader(jmapRoot, new Ajv2020({ strict: false })).readCoreTypesSchema();
+    const realDefs: JsonSchemaDefinitions = coreSchema.$defs ?? {};
+    const mapper = new GoTypeMapper(realDefs);
+    const { source } = emitterFor(realDefs).emit();
+
+    expect(source).toContain('type EmailCreate struct');
+    const unaccounted = Object.keys(realDefs).filter(
+      (defName) => !mapper.isStringOnlyDef(defName) && !mapper.isSkippedDef(defName) && !new RegExp(`^type ${defName} `, 'm').test(source),
+    );
+    expect(unaccounted).toEqual([]);
   });
 
   it('does not emit the hand-written PatchObject definition', () => {

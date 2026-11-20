@@ -24,6 +24,8 @@ export class GoTypeMapper {
     'MailboxId',
     'ThreadId',
     'JmapDate',
+    'Date',
+    'UTCDate',
     'SubmissionId',
     'IdentityId',
     'BlobId',
