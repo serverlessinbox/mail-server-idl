@@ -33,7 +33,7 @@ ServerlessInbox adds two extensions. Each capability URI is also the address of 
 
 This repo contains **definitions only, never generated code**. Each consumer generates into its own source tree and chooses where the output goes with `OUTPUT_DIR`.
 
-**Prerequisites:** [Task](https://taskfile.dev), Node.js 22 with Corepack (Yarn 4), Go 1.25+, and [buf](https://buf.build/docs/installation).
+**Prerequisites:** [Task](https://taskfile.dev), Node.js 22 with Corepack (Yarn 4), Go 1.25+, and [buf](https://buf.build/docs/installation). Generation needs network access to the Buf Schema Registry: the admin API resolves its `protoc-gen-validate` dependency from it, and every TypeScript task runs the remote `buf.build/bufbuild/es` plugin. The Go tasks install `protoc-gen-go` and, for the admin API and the user API, `protoc-gen-validate` into `tools/bin` themselves, so you do not install them.
 
 ```bash
 # JMAP: TypeScript types and validators
