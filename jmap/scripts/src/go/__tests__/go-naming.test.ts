@@ -18,6 +18,11 @@ describe('GoNaming', () => {
     expect(naming.fieldName('@type')).toBe('AtType');
   });
 
+  it('spells the session URL key apiUrl with the APIUrl initialism', () => {
+    expect(naming.fieldName('apiUrl')).toBe('APIUrl');
+    expect(naming.fieldName('downloadUrl')).toBe('DownloadUrl');
+  });
+
   it('upper-cases a trailing Id and Ids of an unlisted key', () => {
     expect(naming.fieldName('parentId')).toBe('ParentID');
     expect(naming.fieldName('sourceIds')).toBe('SourceIDs');

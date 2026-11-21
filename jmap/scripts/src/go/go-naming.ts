@@ -17,6 +17,7 @@ export class GoNaming {
     ['principalId', 'PrincipalID'],
     ['objectAccountId', 'ObjectAccountID'],
     ['cid', 'CID'],
+    ['apiUrl', 'APIUrl'],
   ]);
 
   /** `Email.get.args` becomes `email_get_args.go`. */

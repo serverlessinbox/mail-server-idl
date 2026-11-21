@@ -70,6 +70,20 @@ describe('CoreTypesEmitter', () => {
     expect(unaccounted).toEqual([]);
   });
 
+  it('emits the session and method error types from the real core schema', async () => {
+    const jmapRoot = path.resolve(__dirname, '..', '..', '..', '..');
+    const coreSchema = await new SchemaLoader(jmapRoot, new Ajv2020({ strict: false })).readCoreTypesSchema();
+    const { source } = emitterFor(coreSchema.$defs ?? {}).emit();
+
+    expect(source).toContain('type MethodError struct');
+    expect(source).toContain('type JMAPSessionAccount struct');
+    expect(source).toContain('type JMAPSession struct');
+    expect(source).toMatch(/^\tAPIUrl\s+string\s+`json:"apiUrl"`$/m);
+    expect(source).toMatch(/^\tDownloadUrl\s+string\s+`json:"downloadUrl"`$/m);
+    expect(source).toMatch(/^\tPrimaryAccounts\s+map\[string\]string\s+`json:"primaryAccounts"`$/m);
+    expect(source).toMatch(/^\tAccounts\s+map\[string\]JMAPSessionAccount\s+`json:"accounts"`$/m);
+  });
+
   it('does not emit the hand-written PatchObject definition', () => {
     const { source } = emitterFor({ ...coreDefs, PatchObject: { type: 'object' } }).emit();
 

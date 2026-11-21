@@ -130,6 +130,48 @@
       "additionalProperties": true
     },
 
+    "MethodError": {
+      "type": "object",
+      "description": "A method-level error response (RFC 8620 section 3.6.2).",
+      "properties": {
+        "type":        { "type": "string", "minLength": 1 },
+        "description": { "type": ["string", "null"] }
+      },
+      "required": ["type"],
+      "additionalProperties": true
+    },
+
+    "JMAPSessionAccount": {
+      "type": "object",
+      "description": "A single JMAP account in the session resource (RFC 8620 §2).",
+      "properties": {
+        "name":                { "type": "string" },
+        "isPersonal":          { "type": "boolean" },
+        "isReadOnly":          { "type": "boolean" },
+        "accountCapabilities": { "type": "object", "additionalProperties": true }
+      },
+      "required": ["name", "isPersonal", "isReadOnly", "accountCapabilities"],
+      "additionalProperties": true
+    },
+
+    "JMAPSession": {
+      "type": "object",
+      "description": "The JMAP session resource returned by /.well-known/jmap (RFC 8620 §2).",
+      "properties": {
+        "capabilities":   { "type": "object", "additionalProperties": true },
+        "accounts":       { "type": "object", "additionalProperties": { "$ref": "#/$defs/JMAPSessionAccount" } },
+        "primaryAccounts": { "type": "object", "additionalProperties": { "type": "string" } },
+        "username":       { "type": "string" },
+        "apiUrl":         { "type": "string" },
+        "downloadUrl":    { "type": "string" },
+        "uploadUrl":      { "type": "string" },
+        "eventSourceUrl": { "type": "string" },
+        "state":          { "type": "string" }
+      },
+      "required": ["capabilities", "accounts", "primaryAccounts", "username", "apiUrl", "downloadUrl", "uploadUrl", "eventSourceUrl", "state"],
+      "additionalProperties": true
+    },
+
     "PatchObject": {
       "type": "object",
       "description": "JMAP PatchObject (RFC 8620 §5.3): keys are JSON Pointers (e.g. /name); values are replacement values or null to remove.",
