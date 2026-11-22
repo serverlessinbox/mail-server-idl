@@ -149,10 +149,7 @@ enum HealthSeverity {
 enum SuggestedAction {
   SUGGESTED_ACTION_UNSPECIFIED = 0;
 
-  // Maps 1:1 onto the existing ChangeRequest flow
-  // (CHANGE_REQUEST_TYPE_LAMBDA_CONCURRENCY_INCREASE = 2 /
-  // LambdaConcurrencyIncreasePayload). The UI's "Request higher limit" calls the
-  // existing CreateChangeRequest — nothing new on the request side.
+  // Maps onto SetupService.RequestLambdaConcurrencyIncrease. The UI's "Request higher limit" calls it.
   SUGGESTED_ACTION_REQUEST_LAMBDA_CONCURRENCY_INCREASE = 1;
 }
 
@@ -196,6 +193,14 @@ message RequestSesProductionAccessRequest {
 // RequestSesProductionAccessResponse is empty; callers re-read status to see the outcome.
 message RequestSesProductionAccessResponse {}
 
+message RequestLambdaConcurrencyIncreaseRequest {
+  // Desired account-level concurrent executions limit.
+  int32 desired_account_limit = 1 [(validate.rules).int32 = {gte: 1, lte: 100000}];
+}
+
+// AWS answers by email to the account's contacts.
+message RequestLambdaConcurrencyIncreaseResponse {}
+
 service SetupService {
   // GetReadiness returns the aggregated onboarding/health snapshot. Read-only.
   rpc GetReadiness(GetReadinessRequest) returns (GetReadinessResponse);
@@ -205,4 +210,7 @@ service SetupService {
 
   // RequestSesProductionAccess submits a production-access review request to AWS for this installation.
   rpc RequestSesProductionAccess(RequestSesProductionAccessRequest) returns (RequestSesProductionAccessResponse);
+
+  // RequestLambdaConcurrencyIncrease asks AWS Service Quotas to raise this account's Lambda concurrent-executions limit. Nothing is stored; AWS may email the account's contacts with questions.
+  rpc RequestLambdaConcurrencyIncrease(RequestLambdaConcurrencyIncreaseRequest) returns (RequestLambdaConcurrencyIncreaseResponse);
 }
