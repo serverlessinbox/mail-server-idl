@@ -24,10 +24,14 @@ service ResourceAccountsService {
   // DeleteResourceAccount removes the resource account and its account.
   rpc DeleteResourceAccount(DeleteResourceAccountRequest) returns (DeleteResourceAccountResponse);
 
-  // AddDelegate grants a principal delegate access to a resource account.
+  // AddDelegate grants a principal delegate access to a resource account at the given level.
+  // Granting a lower level replaces the principal's existing grant. A group granted MANAGE makes each
+  // of its individual members a manager of the account. MANAGE on a personal account is refused with
+  // INVALID_ARGUMENT, naming access_level.
   rpc AddDelegate(AddDelegateRequest) returns (AddDelegateResponse);
 
-  // RemoveDelegate revokes delegate access from a principal.
+  // RemoveDelegate revokes delegate access from a principal. All of the principal's access to the
+  // account ends, whatever its level, including MANAGE.
   rpc RemoveDelegate(RemoveDelegateRequest) returns (RemoveDelegateResponse);
 
   // ListDelegates lists all delegates for a resource account.
@@ -53,9 +57,9 @@ enum ResourceClass {
 enum DelegateAccessLevel {
   DELEGATE_ACCESS_LEVEL_UNSPECIFIED = 0;
   DELEGATE_ACCESS_LEVEL_READ_ONLY = 1;   // Read-only access to mailbox contents
-  DELEGATE_ACCESS_LEVEL_READ_WRITE = 2;  // Full read/write access to mailbox contents
-  // Manages the account: the owner's rights on its mail, contacts and Sieve scripts.
-  // Not administrator rights. Shared accounts only.
+  DELEGATE_ACCESS_LEVEL_READ_WRITE = 2;  // Read/write access to mailbox contents. No mail-rule (Sieve) access.
+  // Manages the account with the owner's rights: mail in every mailbox, address books and contact
+  // cards, and mail rules (Sieve scripts). Not administrator access. Shared accounts only.
   DELEGATE_ACCESS_LEVEL_MANAGE = 3;
 }
 
@@ -185,7 +189,7 @@ message AddDelegateRequest {
     min_len: 1
     max_len: 64
   }];
-  // access_level: The level of access to grant.
+  // access_level: The level of access to grant. MANAGE is accepted only for a shared account.
   DelegateAccessLevel access_level = 3;
 }
 
