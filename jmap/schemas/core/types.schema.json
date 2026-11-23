@@ -188,6 +188,24 @@
       "required": ["id", "emailIds"]
     },
 
+    "SearchSnippet": {
+      "type": "object",
+      "description": "A JMAP SearchSnippet object (RFC 8621 section 5.1). Text is Unicode NFC.",
+      "properties": {
+        "emailId": { "$ref": "#/$defs/Id", "description": "The Email the snippet belongs to." },
+        "subject": {
+          "description": "The whole subject, never cut, with & < > escaped as &amp; &lt; &gt; and each matching run wrapped in <mark> and </mark>; null when the filter's text does not match the subject.",
+          "anyOf": [{ "type": "string" }, { "type": "null" }]
+        },
+        "preview": {
+          "description": "The relevant section of the body as plain text, escaped and marked as subject, at most 255 octets after escaping and marking, cut on a rune boundary without splitting an entity or a mark tag, with every opened <mark> closed; null when there is no body match.",
+          "anyOf": [{ "type": "string" }, { "type": "null" }]
+        }
+      },
+      "required": ["emailId", "subject", "preview"],
+      "additionalProperties": false
+    },
+
     "EmailAddress": {
       "type": "object",
       "description": "An email address with an optional display name (RFC 8621 §4.1.2).",

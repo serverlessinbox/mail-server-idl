@@ -48,6 +48,11 @@ methods:
     argsSchema: schemas/methods/Email.queryChanges.args.schema.json
     responseSchema: schemas/methods/Email.queryChanges.response.schema.json
 
+  - name: SearchSnippet/get
+    capability: urn:ietf:params:jmap:mail
+    argsSchema: schemas/methods/SearchSnippet.get.args.schema.json
+    responseSchema: schemas/methods/SearchSnippet.get.response.schema.json
+
   - name: Email/set
     capability: urn:ietf:params:jmap:mail
     argsSchema: schemas/methods/Email.set.args.schema.json

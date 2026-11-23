@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://serverlessinbox.com/schemas/jmap/methods/SearchSnippet.get.args.schema.json",
+  "title": "SearchSnippet/get args",
+  "type": "object",
+  "properties": {
+    "accountId": { "$ref": "../core/types.schema.json#/$defs/AccountId", "description": "The account to fetch search snippets from." },
+    "filter": {
+      "description": "The same filter object as Email/query.",
+      "anyOf": [
+        { "type": "object", "additionalProperties": true },
+        { "type": "null" }
+      ]
+    },
+    "emailIds": {
+      "type": "array",
+      "description": "The ids of the Emails to fetch snippets for.",
+      "items": { "$ref": "../core/types.schema.json#/$defs/Id" }
+    }
+  },
+  "required": ["accountId", "emailIds"]
+}

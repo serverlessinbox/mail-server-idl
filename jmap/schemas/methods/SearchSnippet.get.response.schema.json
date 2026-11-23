@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://serverlessinbox.com/schemas/jmap/methods/SearchSnippet.get.response.schema.json",
+  "title": "SearchSnippet/get response",
+  "type": "object",
+  "properties": {
+    "accountId": { "$ref": "../core/types.schema.json#/$defs/AccountId", "description": "The account the emails belong to." },
+    "list": {
+      "type": "array",
+      "description": "The snippet of each found Email.",
+      "items": { "$ref": "../core/types.schema.json#/$defs/SearchSnippet" }
+    },
+    "notFound": {
+      "description": "Ids that could not be found, or null if all were found.",
+      "anyOf": [
+        { "type": "array", "items": { "$ref": "../core/types.schema.json#/$defs/Id" } },
+        { "type": "null" }
+      ]
+    }
+  },
+  "required": ["accountId", "list", "notFound"]
+}
