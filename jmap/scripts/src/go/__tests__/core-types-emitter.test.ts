@@ -84,6 +84,17 @@ describe('CoreTypesEmitter', () => {
     expect(source).toMatch(/^\tAccounts\s+map\[string\]JMAPSessionAccount\s+`json:"accounts"`$/m);
   });
 
+  it('emits the SearchSnippet core type from the real core schema', async () => {
+    const jmapRoot = path.resolve(__dirname, '..', '..', '..', '..');
+    const coreSchema = await new SchemaLoader(jmapRoot, new Ajv2020({ strict: false })).readCoreTypesSchema();
+    const { source } = emitterFor(coreSchema.$defs ?? {}).emit();
+
+    expect(source).toContain('type SearchSnippet struct');
+    expect(source).toMatch(/^\tEmailID\s+string\s+`json:"emailId"`/m);
+    expect(source).toMatch(/^\tSubject\s+\*string\s+`json:"subject"`/m);
+    expect(source).toMatch(/^\tPreview\s+\*string\s+`json:"preview"`/m);
+  });
+
   it('does not emit the hand-written PatchObject definition', () => {
     const { source } = emitterFor({ ...coreDefs, PatchObject: { type: 'object' } }).emit();
 

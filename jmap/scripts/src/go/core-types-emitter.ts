@@ -77,6 +77,7 @@ export class CoreTypesEmitter {
     'PushSubscriptionUpdated',
     'PushVerification',
     'StateChange',
+    'SearchSnippet',
   ];
 
   public constructor(
