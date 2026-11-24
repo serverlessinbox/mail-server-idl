@@ -10,9 +10,9 @@
     "newState": { "type": "string", "description": "The EmailSubmission state after this call." },
     "created": {
       "type": ["object", "null"],
-      "description": "Map of creation id to the created EmailSubmission object.",
+      "description": "Map of creation id to the server-set members of the created EmailSubmission.",
       "propertyNames": { "$ref": "../core/types.schema.json#/$defs/CreationId" },
-      "additionalProperties": { "$ref": "../core/types.schema.json#/$defs/EmailSubmission" }
+      "additionalProperties": { "$ref": "../core/types.schema.json#/$defs/EmailSubmissionCreated" }
     },
     "updated": {
       "type": ["object", "null"],

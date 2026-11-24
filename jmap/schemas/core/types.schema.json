@@ -69,13 +69,31 @@
         "role":         { "type": ["string", "null"], "description": "System role (inbox, trash, drafts, etc.), or null for user-created mailboxes." },
         "parentId":     { "anyOf": [{ "$ref": "#/$defs/MailboxId" }, { "type": "null" }], "description": "Id of the parent mailbox, or null if top-level." },
         "sortOrder":    { "type": "integer", "minimum": 0, "description": "Client sort-order hint; lower values sort first." },
-        "deletable":    { "type": "boolean", "description": "Whether the user may delete this mailbox (server-set)."},
-        "totalEmails":  { "type": "integer", "minimum": 0, "description": "Total number of emails in the mailbox (server-set)." },
+        "totalEmails": { "type": "integer", "minimum": 0, "description": "Total number of emails in the mailbox (server-set)." },
         "unreadEmails": { "type": "integer", "minimum": 0, "description": "Number of emails without the \\Seen keyword (server-set)." },
         "totalThreads":  { "anyOf": [{ "type": "integer", "minimum": 0 }, { "type": "null" }], "description": "Total number of threads with at least one email in this mailbox, or null if not supported (server-set)." },
-        "unreadThreads": { "anyOf": [{ "type": "integer", "minimum": 0 }, { "type": "null" }], "description": "Number of threads with at least one unread email in this mailbox, or null if not supported (server-set)." }
+        "unreadThreads": { "anyOf": [{ "type": "integer", "minimum": 0 }, { "type": "null" }], "description": "Number of threads with at least one unread email in this mailbox, or null if not supported (server-set)." },
+        "myRights":      { "$ref": "#/$defs/MailboxRights", "description": "The rights the user has in relation to this mailbox (server-set, RFC 8621 section 2)." },
+        "isSubscribed":  { "type": "boolean", "description": "Whether the user wishes to see this mailbox in their client (RFC 8621 section 2). Stored per user." }
       },
       "required": ["id"]
+    },
+
+    "MailboxRights": {
+      "type": "object",
+      "description": "The rights a user has in relation to a Mailbox (RFC 8621 section 2, myRights). Backwards compatible with IMAP ACLs (RFC 4314).",
+      "properties": {
+        "mayReadItems":   { "type": "boolean", "description": "The user may use the mailbox as part of an Email/query filter and see its emails (IMAP ACLs l and r)." },
+        "mayAddItems":    { "type": "boolean", "description": "The user may add mail to the mailbox, by creating an email or moving one (IMAP ACL i)." },
+        "mayRemoveItems": { "type": "boolean", "description": "The user may remove mail from the mailbox, by changing its mailboxIds or destroying the email (IMAP ACLs t and e)." },
+        "maySetSeen":     { "type": "boolean", "description": "The user may add or remove the $seen keyword (IMAP ACL s)." },
+        "maySetKeywords": { "type": "boolean", "description": "The user may add or remove any keyword other than $seen (IMAP ACL w)." },
+        "mayCreateChild": { "type": "boolean", "description": "The user may create a mailbox with this mailbox as its parent (IMAP ACL k)." },
+        "mayRename":      { "type": "boolean", "description": "The user may rename the mailbox or make it a child of another mailbox (IMAP ACL x)." },
+        "mayDelete":      { "type": "boolean", "description": "The user may delete the mailbox itself (IMAP ACL x)." },
+        "maySubmit":      { "type": "boolean", "description": "Messages may be submitted directly to the mailbox (IMAP ACL p)." }
+      },
+      "required": ["mayReadItems", "mayAddItems", "mayRemoveItems", "maySetSeen", "maySetKeywords", "mayCreateChild", "mayRename", "mayDelete", "maySubmit"]
     },
 
     "Email": {
@@ -124,7 +142,9 @@
         "type":        { "type": "string", "minLength": 1 },
         "description": { "type": ["string", "null"] },
         "properties":  { "type": ["array", "null"], "items": { "type": "string" } },
-        "existingId": { "type": "string", "description": "For alreadyExists: the id of the existing object that carries the conflicting value (RFC 8620 §5.3)." }
+        "existingId": { "type": "string", "description": "For alreadyExists: the id of the existing object that carries the conflicting value (RFC 8620 §5.3)." },
+        "invalidRecipients": { "type": "array", "items": { "type": "string" }, "description": "For EmailSubmission/set invalidRecipients: the addresses of the envelope rcptTo that are not valid to send to (RFC 8621 §7.5)." },
+        "suppressedRecipients": { "type": "array", "items": { "type": "string" }, "description": "For EmailSubmission/set invalidRecipients: the recipient addresses the stack refuses because they are on its suppression list." }
       },
       "required": ["type"],
       "additionalProperties": true
@@ -268,14 +288,31 @@
       "required": ["id", "identityId", "emailId", "threadId", "sendAt", "undoStatus"]
     },
 
+    "EmailSubmissionCreated": {
+      "type": "object",
+      "description": "The members of a created EmailSubmission returned in the created map of EmailSubmission/set (RFC 8620 §5.3, RFC 8621 §7). Holds every server-set member and default.",
+      "properties": {
+        "id":             { "$ref": "#/$defs/SubmissionId", "description": "The submission id." },
+        "identityId":     { "$ref": "#/$defs/IdentityId", "description": "The identity used to send the email." },
+        "emailId":        { "$ref": "#/$defs/EmailId", "description": "The email being submitted." },
+        "threadId":       { "$ref": "#/$defs/ThreadId", "description": "The thread the email belongs to." },
+        "sendAt":         { "$ref": "#/$defs/JmapDate", "description": "The creation time of the submission." },
+        "undoStatus":     { "type": "string", "enum": ["pending", "final", "canceled"], "description": "Whether the submission can still be cancelled." },
+        "envelope":       { "$ref": "#/$defs/Envelope", "description": "The stored envelope, whether the client sent one or the server generated it." },
+        "deliveryStatus": { "type": "object", "additionalProperties": { "$ref": "#/$defs/DeliveryStatus" }, "description": "Map of recipient email to DeliveryStatus, as stored." },
+        "dsnBlobIds":     { "type": "array", "items": { "$ref": "#/$defs/BlobId" }, "description": "Blob ids of received DSN messages; empty at creation." },
+        "mdnBlobIds":     { "type": "array", "items": { "$ref": "#/$defs/BlobId" }, "description": "Blob ids of received MDN messages; empty at creation." }
+      },
+      "required": ["id", "identityId", "emailId", "threadId", "sendAt", "undoStatus", "envelope", "deliveryStatus", "dsnBlobIds", "mdnBlobIds"]
+    },
+
     "EmailSubmissionCreate": {
       "type": "object",
-      "description": "Client-settable fields when creating an EmailSubmission (RFC 8621 §7.5).",
+      "description": "Client-settable fields when creating an EmailSubmission (RFC 8621 §7.5). sendAt is server-set and is not a create member.",
       "properties": {
         "identityId": { "$ref": "#/$defs/IdentityId", "description": "The identity to send from. Required." },
         "emailId":    { "$ref": "#/$defs/EmailId", "description": "The email to submit. Required." },
-        "envelope":   { "anyOf": [{ "$ref": "#/$defs/Envelope" }, { "type": "null" }], "description": "SMTP envelope. If null the server generates it from the email headers." },
-        "sendAt":     { "anyOf": [{ "$ref": "#/$defs/JmapDate" }, { "type": "null" }], "description": "Scheduled send time. If null send immediately." }
+        "envelope":   { "anyOf": [{ "$ref": "#/$defs/Envelope" }, { "type": "null" }], "description": "SMTP envelope. If null the server generates it from the email headers." }
       },
       "required": ["identityId", "emailId"]
     },
@@ -332,7 +369,8 @@
         "name":      { "type": "string", "minLength": 1, "description": "User-visible name." },
         "parentId":  { "anyOf": [{ "$ref": "#/$defs/MailboxId" }, { "type": "null" }], "description": "Parent mailbox id, or null for top-level." },
         "role":      { "anyOf": [{ "type": "string" }, { "type": "null" }], "description": "System role (inbox, trash, etc.), or null." },
-        "sortOrder": { "type": "integer", "minimum": 0, "description": "Sort order hint for display." }
+        "sortOrder": { "type": "integer", "minimum": 0, "description": "Sort order hint for display." },
+        "isSubscribed": { "type": "boolean", "description": "Whether the user wishes to see this mailbox in their client." }
       },
       "required": ["name"]
     },
@@ -343,6 +381,7 @@
       "properties": {
         "name":      { "type": "string", "minLength": 1, "description": "New user-visible name for the mailbox." },
         "parentId":  { "anyOf": [{ "$ref": "#/$defs/MailboxId" }, { "type": "null" }], "description": "New parent mailbox id, or null to move to top-level." },
+        "role":      { "anyOf": [{ "type": "string" }, { "type": "null" }], "description": "New role (an IANA IMAP mailbox name attribute, lowercase), or null for none." },
         "sortOrder": { "type": "integer", "minimum": 0, "description": "New client sort-order hint." }
       }
     },
@@ -473,7 +512,7 @@
         "name":        { "type": "string", "description": "User-visible name of the address book." },
         "description": { "type": "string", "description": "Optional human-readable description." },
         "sortOrder":   { "type": "integer", "minimum": 0, "description": "Client sort-order hint." },
-        "isDefault":   { "type": "boolean", "description": "Whether this should be the default address book for new contacts." },
+        "isSubscribed": { "type": "boolean", "description": "Whether the user is subscribed to this address book." },
         "shareWith":   { "type": "object", "additionalProperties": { "$ref": "#/$defs/AddressBookRights" }, "description": "Initial PrincipalId → AddressBookRights sharing map." }
       },
       "required": ["name"]
@@ -486,7 +525,6 @@
         "name":         { "type": "string", "description": "New name for the address book." },
         "description":  { "type": "string", "description": "New description." },
         "sortOrder":    { "type": "integer", "minimum": 0, "description": "New sort-order hint." },
-        "isDefault":    { "type": "boolean", "description": "Set to true to make this the default address book." },
         "isSubscribed": { "type": "boolean", "description": "Set subscription status." },
         "shareWith":    { "type": "object", "additionalProperties": { "$ref": "#/$defs/AddressBookRights" }, "description": "Replacement PrincipalId → AddressBookRights sharing map." }
       }
@@ -537,138 +575,204 @@
       "type": "object",
       "description": "A single component of a JSContact name (RFC 9553 §2.2.1.2).",
       "properties": {
+        "@type": { "type": "string", "description": "The JSContact type of the object; \"NameComponent\" if set (RFC 9553 section 1.3.4)." },
         "kind":  { "type": "string", "description": "Component kind: title, given, given2, surname, surname2, credential, generation, separator." },
-        "value": { "type": "string", "description": "The text value of this component." }
+        "value": { "type": "string", "description": "The text value of this component." },
+        "phonetic": { "type": "string", "description": "The pronunciation of the name component; needs phoneticScript or phoneticSystem on the Name (RFC 9553 section 1.5.4)." }
       },
-      "required": ["kind", "value"]
+      "required": ["kind", "value"],
+      "additionalProperties": true
     },
 
     "ContactCardName": {
       "type": "object",
       "description": "Structured name for a ContactCard (RFC 9553 §2.2.1).",
       "properties": {
-        "components": { "type": "array", "items": { "$ref": "#/$defs/NameComponent" }, "description": "Ordered name components." },
-        "full":       { "type": "string", "description": "Full name as a single string." },
-        "isOrdered":  { "type": "boolean", "description": "Whether the components are in display order." }
-      }
+        "@type":            { "type": "string", "description": "The JSContact type of the object; \"Name\" if set (RFC 9553 section 1.3.4)." },
+        "components":       { "type": "array", "items": { "$ref": "#/$defs/NameComponent" }, "description": "Ordered name components." },
+        "full":             { "type": "string", "description": "Full name as a single string." },
+        "isOrdered":        { "type": "boolean", "description": "Whether the components are in display order." },
+        "defaultSeparator": { "type": "string", "description": "The default separator between component values; not set when isOrdered is false or components is not set." },
+        "sortAs":           { "type": "object", "additionalProperties": { "type": "string" }, "description": "Name component kind to the verbatim string to sort by; not set without components." },
+        "phoneticScript":   { "type": "string", "description": "The script of the NameComponent phonetic values (RFC 5646 script subtag)." },
+        "phoneticSystem":   { "type": "string", "description": "The phonetic system of the NameComponent phonetic values: ipa, jyut, piny." }
+      },
+      "additionalProperties": true
     },
 
     "ContactCardEmail": {
       "type": "object",
       "description": "A single email address entry on a ContactCard (RFC 9553 §2.3.1).",
       "properties": {
+        "@type":    { "type": "string", "description": "The JSContact type of the object; \"EmailAddress\" if set (RFC 9553 section 1.3.4)." },
         "address":  { "type": "string", "description": "The email address." },
         "label":    { "type": "string", "description": "Optional UI label." },
         "contexts": { "type": "object", "additionalProperties": { "type": "boolean" }, "description": "Usage contexts (e.g. work, private)." },
         "pref":     { "type": "integer", "minimum": 1, "maximum": 100, "description": "Preference value; lower is more preferred." }
       },
-      "required": ["address"]
+      "required": ["address"],
+      "additionalProperties": true
     },
 
     "ContactCardPhone": {
       "type": "object",
       "description": "A single phone number entry on a ContactCard (RFC 9553 §2.3.3).",
       "properties": {
+        "@type":    { "type": "string", "description": "The JSContact type of the object; \"Phone\" if set (RFC 9553 section 1.3.4)." },
         "number":   { "type": "string", "description": "The phone number string." },
         "label":    { "type": "string", "description": "Optional UI label." },
         "contexts": { "type": "object", "additionalProperties": { "type": "boolean" }, "description": "Usage contexts (e.g. work, private)." },
-        "features": { "type": "object", "additionalProperties": { "type": "boolean" }, "description": "Phone features (e.g. voice, fax, cell, video)." },
+        "features": { "type": "object", "additionalProperties": { "type": "boolean" }, "description": "Phone features, each key set to true: mobile, voice, text, video, main-number, textphone, fax, pager (RFC 9553 section 2.3.3)." },
         "pref":     { "type": "integer", "minimum": 1, "maximum": 100, "description": "Preference value; lower is more preferred." }
       },
-      "required": ["number"]
+      "required": ["number"],
+      "additionalProperties": true
     },
 
     "AddressComponent": {
       "type": "object",
       "description": "A single component of a structured postal address (RFC 9553 §2.5.1.2).",
       "properties": {
-        "kind":  { "type": "string", "description": "Component kind: room, apartment, floor, building, number, name, block, subdistrict, district, locality, region, postcode, country, direction, landmark, postOfficeBox, separator." },
-        "value": { "type": "string", "description": "The text value of this component." }
+        "@type":    { "type": "string", "description": "The JSContact type of the object; \"AddressComponent\" if set (RFC 9553 section 1.3.4)." },
+        "kind":     { "type": "string", "description": "Component kind: room, apartment, floor, building, number, name, block, subdistrict, district, locality, region, postcode, country, direction, landmark, postOfficeBox, separator." },
+        "value":    { "type": "string", "description": "The text value of this component." },
+        "phonetic": { "type": "string", "description": "The pronunciation of the component; needs phoneticScript or phoneticSystem on the Address (RFC 9553 section 1.5.4)." }
       },
-      "required": ["kind", "value"]
+      "required": ["kind", "value"],
+      "additionalProperties": true
     },
 
     "ContactCardAddress": {
       "type": "object",
       "description": "A structured postal address entry on a ContactCard (RFC 9553 §2.5.1).",
       "properties": {
-        "components":  { "type": "array", "items": { "$ref": "#/$defs/AddressComponent" }, "description": "Ordered address components." },
-        "full":        { "type": "string", "description": "Full address as a single string." },
-        "countryCode": { "type": "string", "description": "ISO 3166-1 alpha-2 country code." },
-        "isOrdered":   { "type": "boolean", "description": "Whether the components are in display order." },
-        "contexts":    { "type": "object", "additionalProperties": { "type": "boolean" }, "description": "Usage contexts." },
-        "pref":        { "type": "integer", "minimum": 1, "maximum": 100, "description": "Preference value; lower is more preferred." }
-      }
+        "@type":            { "type": "string", "description": "The JSContact type of the object; \"Address\" if set (RFC 9553 section 1.3.4)." },
+        "components":       { "type": "array", "items": { "$ref": "#/$defs/AddressComponent" }, "description": "Ordered address components." },
+        "full":             { "type": "string", "description": "Full address as a single string." },
+        "countryCode":      { "type": "string", "description": "ISO 3166-1 alpha-2 country code." },
+        "coordinates":      { "type": "string", "description": "A geo: URI (RFC 5870) for the address." },
+        "timeZone":         { "type": "string", "description": "The IANA Time Zone Database name of the time zone the address is in." },
+        "isOrdered":        { "type": "boolean", "description": "Whether the components are in display order." },
+        "defaultSeparator": { "type": "string", "description": "The default separator between component values; not set when isOrdered is false or components is not set." },
+        "contexts":         { "type": "object", "additionalProperties": { "type": "boolean" }, "description": "Usage contexts." },
+        "pref":             { "type": "integer", "minimum": 1, "maximum": 100, "description": "Preference value; lower is more preferred." },
+        "phoneticScript":   { "type": "string", "description": "The script of the AddressComponent phonetic values." },
+        "phoneticSystem":   { "type": "string", "description": "The phonetic system of the AddressComponent phonetic values: ipa, jyut, piny." }
+      },
+      "additionalProperties": true
     },
 
     "OrgUnit": {
       "type": "object",
       "description": "An organizational unit within an organization entry (RFC 9553 §2.2.3).",
       "properties": {
-        "name": { "type": "string", "description": "Name of the organizational unit." }
+        "@type":  { "type": "string", "description": "The JSContact type of the object; \"OrgUnit\" if set (RFC 9553 section 1.3.4)." },
+        "name":   { "type": "string", "description": "Name of the organizational unit." },
+        "sortAs": { "type": "string", "description": "The verbatim string to sort the unit by among units of the same level." }
       },
-      "required": ["name"]
+      "required": ["name"],
+      "additionalProperties": true
     },
 
     "ContactCardOrganization": {
       "type": "object",
       "description": "An organization entry on a ContactCard (RFC 9553 §2.2.3).",
       "properties": {
+        "@type":    { "type": "string", "description": "The JSContact type of the object; \"Organization\" if set (RFC 9553 section 1.3.4)." },
         "name":     { "type": "string", "description": "Name of the organization." },
         "units":    { "type": "array", "items": { "$ref": "#/$defs/OrgUnit" }, "description": "Organizational units." },
+        "sortAs":   { "type": "string", "description": "The verbatim string to sort the organization by." },
         "contexts": { "type": "object", "additionalProperties": { "type": "boolean" }, "description": "Usage contexts." }
-      }
+      },
+      "additionalProperties": true
     },
 
     "ContactCardTitle": {
       "type": "object",
       "description": "A job title or role entry on a ContactCard (RFC 9553 §2.2.5). Kind: title (default) or role.",
       "properties": {
-        "name": { "type": "string", "description": "Title or role text." },
-        "kind": { "type": "string", "description": "\"title\" or \"role\"." }
+        "@type":          { "type": "string", "description": "The JSContact type of the object; \"Title\" if set (RFC 9553 section 1.3.4)." },
+        "name":           { "type": "string", "description": "Title or role text." },
+        "kind":           { "type": "string", "description": "\"title\" or \"role\"." },
+        "organizationId": { "type": "string", "description": "The id of the organization entry in which this title is held." }
       },
-      "required": ["name"]
+      "required": ["name"],
+      "additionalProperties": true
+    },
+
+    "ContactCardNoteAuthor": {
+      "type": "object",
+      "description": "The author of a note (RFC 9553 §2.8.3). At least one member other than @type is set.",
+      "properties": {
+        "@type": { "type": "string", "description": "The JSContact type of the object; \"Author\" if set (RFC 9553 section 1.3.4)." },
+        "name":  { "type": "string", "description": "The name of the author." },
+        "uri":   { "type": "string", "description": "The URI that identifies the author." }
+      },
+      "additionalProperties": true
     },
 
     "ContactCardNote": {
       "type": "object",
       "description": "A free-text note on a ContactCard (RFC 9553 §2.8.3).",
       "properties": {
-        "note": { "type": "string", "description": "Note text." }
+        "@type":   { "type": "string", "description": "The JSContact type of the object; \"Note\" if set (RFC 9553 section 1.3.4)." },
+        "note":    { "type": "string", "description": "Note text." },
+        "created": { "$ref": "#/$defs/UTCDate", "description": "The date and time the note was created." },
+        "author":  { "$ref": "#/$defs/ContactCardNoteAuthor", "description": "The author of the note." }
       },
-      "required": ["note"]
+      "required": ["note"],
+      "additionalProperties": true
     },
 
     "PartialDate": {
       "type": "object",
       "description": "A complete or partial calendar date (RFC 9553 §2.8.1).",
       "properties": {
-        "year":  { "type": "integer", "minimum": 1, "description": "4-digit year. Omit if unknown." },
-        "month": { "type": "integer", "minimum": 1, "maximum": 12, "description": "Month (1-12). Omit if unknown." },
-        "day":   { "type": "integer", "minimum": 1, "maximum": 31, "description": "Day of month (1-31). Omit if unknown." }
-      }
+        "@type":         { "type": "string", "description": "The JSContact type of the object; \"PartialDate\" if set (RFC 9553 section 1.3.4)." },
+        "year":          { "type": "integer", "minimum": 1, "description": "4-digit year. Omit if unknown." },
+        "month":         { "type": "integer", "minimum": 1, "maximum": 12, "description": "Month (1-12). Omit if unknown." },
+        "day":           { "type": "integer", "minimum": 1, "maximum": 31, "description": "Day of month (1-31). Omit if unknown." },
+        "calendarScale": { "type": "string", "description": "The calendar system the date occurs in, lowercase (a CLDR calendar name or a vendor value); year, month and day stay Gregorian." }
+      },
+      "additionalProperties": true
+    },
+
+    "ContactCardTimestamp": {
+      "type": "object",
+      "description": "A complete UTC point in time, the Timestamp form of an anniversary date (RFC 9553 §2.8.1). @type \"Timestamp\" is required when it is the date value.",
+      "properties": {
+        "@type": { "type": "string", "const": "Timestamp", "description": "Must be \"Timestamp\"." },
+        "utc":   { "$ref": "#/$defs/UTCDate", "description": "The point in time in UTC." }
+      },
+      "required": ["@type", "utc"],
+      "additionalProperties": true
     },
 
     "ContactCardAnniversary": {
       "type": "object",
       "description": "A named date such as a birthday on a ContactCard (RFC 9553 §2.8.1). Kind: birth, death, wedding.",
       "properties": {
-        "kind": { "type": "string", "description": "Anniversary kind: birth, death, wedding." },
-        "date": { "$ref": "#/$defs/PartialDate", "description": "The date (partial dates supported)." }
+        "@type": { "type": "string", "description": "The JSContact type of the object; \"Anniversary\" if set (RFC 9553 section 1.3.4)." },
+        "kind":  { "type": "string", "description": "Anniversary kind: birth, death, wedding." },
+        "date":  { "anyOf": [{ "$ref": "#/$defs/PartialDate" }, { "$ref": "#/$defs/ContactCardTimestamp" }], "description": "The date: a PartialDate (partial dates supported) or a Timestamp with @type \"Timestamp\"." },
+        "place": { "$ref": "#/$defs/ContactCardAddress", "description": "An address associated with the anniversary, e.g. the place of birth." }
       },
-      "required": ["kind", "date"]
+      "required": ["kind", "date"],
+      "additionalProperties": true
     },
 
     "ContactCardMedia": {
       "type": "object",
       "description": "A media entry (photo, sound, logo) on a ContactCard (RFC 9553 §2.6.4, RFC 9610 blobId extension).",
       "properties": {
+        "@type":     { "type": "string", "description": "The JSContact type of the object; \"Media\" if set (RFC 9553 section 1.3.4)." },
         "kind":      { "type": "string", "description": "Media kind: photo, sound, logo." },
         "uri":       { "type": "string", "description": "URI to an external resource. Mutually exclusive with blobId." },
         "blobId":    { "$ref": "#/$defs/BlobId", "description": "BlobId of a hosted media blob. On input: an UploadBlobID; on output: a permanent ContactBlobID (cnt: prefix)." },
         "mediaType": { "type": "string", "description": "MIME type (e.g. image/jpeg)." }
       },
-      "required": ["kind"]
+      "required": ["kind"],
+      "additionalProperties": true
     },
 
     "ContactCard": {
@@ -678,6 +782,10 @@
         "@type":          { "type": "string", "const": "Card", "description": "Must be \"Card\" (RFC 9553 §2.2)" },
         "version":        { "type": "string", "const": "1.0", "description": "Must be \"1.0\" (RFC 9553 §2.3)" },
         "id":             { "$ref": "#/$defs/ContactCardId", "description": "The contact card id (server-set, immutable)." },
+        "uid":            { "type": "string", "description": "An identifier that associates the card across systems, address books and views; a URN, a URI or free text (RFC 9553 §2.1.9)." },
+        "kind":           { "type": "string", "description": "The kind of entity the card represents: individual (default), group, org, location, device, application (RFC 9553 §2.1.4)." },
+        "members":        { "type": "object", "additionalProperties": { "type": "boolean", "const": true }, "description": "For a group card: the uid of each member card to true. Set only when kind is group (RFC 9553 §2.1.6)." },
+        "language":       { "type": "string", "description": "The RFC 5646 language tag that best describes the text in the card (RFC 9553 §2.1.5)." },
         "addressBookIds": { "type": "object", "additionalProperties": { "type": "boolean" }, "description": "AddressBookId → true map indicating which address books contain this card (server-set)." },
         "created":        { "$ref": "#/$defs/JmapDate", "description": "UTC date-time the card was first created (server-set, RFC 9553 §2.1.3)." },
         "updated":        { "$ref": "#/$defs/JmapDate", "description": "UTC date-time of the last modification (server-set, RFC 9553 §2.1.10)." },
@@ -691,7 +799,8 @@
         "anniversaries":  { "type": "object", "additionalProperties": { "$ref": "#/$defs/ContactCardAnniversary" }, "description": "String-keyed map of anniversary entries." },
         "media":          { "type": "object", "additionalProperties": { "$ref": "#/$defs/ContactCardMedia" }, "description": "String-keyed map of media entries (photos, logos, sounds)." }
       },
-      "required": ["@type", "version", "id"]
+      "required": ["@type", "version", "id"],
+      "additionalProperties": true
     },
 
     "ContactCardCreate": {
@@ -700,6 +809,10 @@
       "properties": {
         "@type":          { "type": "string", "const": "Card", "description": "Must be \"Card\" (RFC 9553 §2.2)" },
         "version":        { "type": "string", "const": "1.0", "description": "Must be \"1.0\" (RFC 9553 §2.3)" },
+        "uid":            { "type": "string", "description": "An identifier that associates the card across systems, address books and views; a URN, a URI or free text (RFC 9553 §2.1.9)." },
+        "kind":           { "type": "string", "description": "The kind of entity the card represents: individual (default), group, org, location, device, application (RFC 9553 §2.1.4)." },
+        "members":        { "type": "object", "additionalProperties": { "type": "boolean", "const": true }, "description": "For a group card: the uid of each member card to true. Set only when kind is group (RFC 9553 §2.1.6)." },
+        "language":       { "type": "string", "description": "The RFC 5646 language tag that best describes the text in the card (RFC 9553 §2.1.5)." },
         "addressBookIds": { "type": "object", "additionalProperties": { "type": "boolean" }, "minProperties": 1, "description": "AddressBookId → true map. Exactly one entry required." },
         "name":           { "$ref": "#/$defs/ContactCardName" },
         "emails":         { "type": "object", "additionalProperties": { "$ref": "#/$defs/ContactCardEmail" } },
@@ -711,13 +824,19 @@
         "anniversaries":  { "type": "object", "additionalProperties": { "$ref": "#/$defs/ContactCardAnniversary" } },
         "media":          { "type": "object", "additionalProperties": { "$ref": "#/$defs/ContactCardMedia" } }
       },
-      "required": ["@type", "version", "addressBookIds"]
+      "required": ["@type", "version", "addressBookIds"],
+      "additionalProperties": true
     },
 
     "ContactCardUpdate": {
       "type": "object",
       "description": "Fields that may be patched on a ContactCard. All properties are optional.",
       "properties": {
+        "version":        { "type": "string", "const": "1.0", "description": "Must be \"1.0\" (RFC 9553 §2.3)" },
+        "uid":            { "type": "string", "description": "An identifier that associates the card across systems, address books and views; a URN, a URI or free text (RFC 9553 §2.1.9)." },
+        "kind":           { "type": "string", "description": "The kind of entity the card represents: individual (default), group, org, location, device, application (RFC 9553 §2.1.4)." },
+        "members":        { "type": "object", "additionalProperties": { "type": "boolean", "const": true }, "description": "For a group card: the uid of each member card to true. Set only when kind is group (RFC 9553 §2.1.6)." },
+        "language":       { "type": "string", "description": "The RFC 5646 language tag that best describes the text in the card (RFC 9553 §2.1.5)." },
         "addressBookIds": { "type": "object", "additionalProperties": { "type": "boolean" }, "description": "Replacement AddressBookId → true map." },
         "name":           { "$ref": "#/$defs/ContactCardName" },
         "emails":         { "type": "object", "additionalProperties": { "$ref": "#/$defs/ContactCardEmail" } },
@@ -741,7 +860,8 @@
         "description": { "anyOf": [{ "type": "string" }, { "type": "null" }], "description": "Optional free-text description, or null if unset." },
         "email":       { "anyOf": [{ "type": "string" }, { "type": "null" }], "description": "Primary email address for this principal, if any. Must conform to addr-spec syntax (RFC 5322 §3.4.1) (RFC 9670 §2)." },
         "timeZone":    { "anyOf": [{ "type": "string" }, { "type": "null" }], "description": "IANA time zone identifier for this principal, or null if unset." },
-        "picture":     { "anyOf": [{ "$ref": "#/$defs/BlobId" }, { "type": "null" }], "description": "BlobId of a profile picture, or null if none." }
+        "capabilities": { "type": "object", "additionalProperties": { "type": "object", "additionalProperties": true }, "description": "Map of JMAP capability URI to domain-specific information about the principal in relation to that capability (server-set, RFC 9670 section 2)." },
+        "accounts":    { "anyOf": [{ "type": "object", "additionalProperties": { "$ref": "#/$defs/JMAPSessionAccount" } }, { "type": "null" }], "description": "Map of account id to Account object for each account holding data for this principal that the user may access, or null if none (server-set, RFC 9670 section 2)." }
       },
       "required": ["id", "type", "name"]
     },
@@ -750,12 +870,11 @@
       "type": "object",
       "description": "Describes who made a sharing change (RFC 9670 §5).",
       "properties": {
-        "type":        { "type": "string", "description": "Type of actor, e.g. \"principal\" or \"system\"." },
-        "name":        { "type": "string", "description": "Display name of the actor." },
+        "name":        { "type": "string", "description": "The name of the entity who made the change; never null (RFC 9670 section 3)." },
         "email":       { "anyOf": [{ "type": "string" }, { "type": "null" }], "description": "Email address of the actor, or null if none is available." },
         "principalId": { "anyOf": [{ "$ref": "#/$defs/PrincipalId" }, { "type": "null" }], "description": "Id of the actor principal, if applicable." }
       },
-      "required": ["type", "name"]
+      "required": ["name"]
     },
 
     "ShareNotification": {
@@ -830,7 +949,7 @@
         "id":      { "$ref": "#/$defs/Id", "description": "The server-assigned subscription id." },
         "expires": { "$ref": "#/$defs/JmapDate", "description": "The expiry in force." }
       },
-      "required": ["id", "expires"]
+      "required": ["id"]
     },
 
     "PushSubscriptionUpdated": {
@@ -838,8 +957,7 @@
       "description": "The server-side changes of an updated PushSubscription (RFC 8620 §5.3). Present only when the server changed expires.",
       "properties": {
         "expires": { "$ref": "#/$defs/JmapDate", "description": "The expiry in force, after server clamping." }
-      },
-      "required": ["expires"]
+      }
     },
 
     "PushVerification": {

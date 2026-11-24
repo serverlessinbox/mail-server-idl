@@ -8,7 +8,7 @@
     "accountId": { "$ref": "../core/types.schema.json#/$defs/AccountId", "description": "The account to query EmailSubmission objects in." },
     "filter": {
       "type": ["object", "null"],
-      "description": "Conditions to filter EmailSubmission objects.",
+      "description": "Conditions to filter EmailSubmission objects (RFC 8621 section 7.3). Supported properties: identityIds (Id[]), emailIds (Id[]), threadIds (Id[]), undoStatus (String: pending, final or canceled), before (UTCDate), after (UTCDate).",
       "additionalProperties": true
     },
     "sort": {

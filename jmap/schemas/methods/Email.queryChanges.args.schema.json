@@ -12,9 +12,10 @@
       "items": { "type": "object", "additionalProperties": true }
     },
     "sinceQueryState": { "type": "string", "minLength": 1, "description": "The queryState from the previous Email/query or Email/queryChanges response." },
-    "maxChanges": { "type": ["integer", "null"], "minimum": 0, "maximum": 9007199254740991,"description": "Maximum number of changes to return. If exceeded, hasMoreChanges will be true." },
+    "maxChanges": { "type": ["integer", "null"], "minimum": 0, "maximum": 9007199254740991,"description": "Maximum number of changes to return. If exceeded, the call fails with the tooManyChanges error (RFC 8620 section 5.6)." },
     "upToId": { "type": ["string", "null"], "description": "Return changes only up to and including this EmailId." },
-    "calculateTotal": { "type": "boolean", "default": false, "description": "If true, the response includes the total number of results in the new query state." }
+    "calculateTotal": { "type": "boolean", "default": false, "description": "If true, the response includes the total number of results in the new query state." },
+    "collapseThreads": { "type": "boolean", "default": false, "description": "The collapseThreads argument that was used with Email/query (RFC 8621 section 4.5)." }
   },
   "required": ["accountId", "sinceQueryState"]
 }

@@ -23,13 +23,7 @@
     "fetchTextBodyValues": { "type": "boolean", "description": "If true, fetch the value of text/plain body parts." },
     "fetchHTMLBodyValues": { "type": "boolean", "description": "If true, fetch the value of text/html body parts." },
     "fetchAllBodyValues": { "type": "boolean", "description": "If true, fetch all body part values regardless of content type." },
-    "maxBodyValueBytes": { "type": "integer", "minimum": 0, "description": "Truncate body values to this many bytes. 0 means no truncation." },
-    "fetchHeaders": {
-      "type": "array",
-      "description": "List of specific header field names to return as header: values.",
-      "items": { "type": "string", "minLength": 1 }
-    },
-    "fetchAllHeaders": { "type": ["boolean", "null"], "description": "If true, return all raw headers regardless of fetchHeaders list." }
+    "maxBodyValueBytes": { "type": "integer", "minimum": 0, "description": "Truncate body values to this many bytes. 0 means no truncation." }
   },
   "required": ["accountId"]
 }
