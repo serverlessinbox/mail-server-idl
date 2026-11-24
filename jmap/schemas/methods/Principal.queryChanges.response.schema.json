@@ -7,7 +7,6 @@
     "accountId": { "$ref": "../core/types.schema.json#/$defs/AccountId", "description": "The account these query changes belong to." },
     "oldQueryState": { "type": "string", "minLength": 1, "description": "The queryState this response starts from (matches sinceQueryState from request)." },
     "newQueryState": { "type": "string", "minLength": 1, "description": "The current queryState. Pass to the next Principal/queryChanges call." },
-    "hasMoreChanges": { "type": "boolean", "description": "If true, more changes exist beyond maxChanges. Call again with newQueryState." },
     "removed": {
       "type": "array",
       "description": "PrincipalIds that are no longer in the query result set.",
@@ -27,5 +26,5 @@
     },
     "total": { "type": "integer", "minimum": 0, "description": "Updated total count of results (if calculateTotal was true in the original query)." }
   },
-  "required": ["accountId", "oldQueryState", "newQueryState", "hasMoreChanges", "removed", "added"]
+  "required": ["accountId", "oldQueryState", "newQueryState", "removed", "added"]
 }

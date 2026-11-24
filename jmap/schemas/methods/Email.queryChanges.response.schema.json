@@ -7,7 +7,6 @@
     "accountId": { "$ref": "../core/types.schema.json#/$defs/AccountId", "description": "The account these query changes belong to." },
     "oldQueryState": { "type": "string", "minLength": 1, "description": "The queryState this response starts from (matches sinceQueryState from request)." },
     "newQueryState": { "type": "string", "minLength": 1, "description": "The current queryState. Pass to the next Email/queryChanges call." },
-    "hasMoreChanges": { "type": "boolean", "description": "If true, more changes exist beyond maxChanges. Call again with newQueryState." },
     "removed": {
       "type": "array",
       "description": "EmailIds that are no longer in the query result set.",
@@ -32,7 +31,6 @@
     "accountId",
     "oldQueryState",
     "newQueryState",
-    "hasMoreChanges",
     "removed",
     "added"
   ]

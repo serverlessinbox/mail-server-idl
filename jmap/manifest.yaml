@@ -151,16 +151,6 @@ methods:
     argsSchema: schemas/methods/AddressBook.set.args.schema.json
     responseSchema: schemas/methods/AddressBook.set.response.schema.json
 
-  - name: AddressBook/query
-    capability: urn:ietf:params:jmap:contacts
-    argsSchema: schemas/methods/AddressBook.query.args.schema.json
-    responseSchema: schemas/methods/AddressBook.query.response.schema.json
-
-  - name: AddressBook/queryChanges
-    capability: urn:ietf:params:jmap:contacts
-    argsSchema: schemas/methods/AddressBook.queryChanges.args.schema.json
-    responseSchema: schemas/methods/AddressBook.queryChanges.response.schema.json
-
   - name: AddressBook/changes
     capability: urn:ietf:params:jmap:contacts
     argsSchema: schemas/methods/AddressBook.changes.args.schema.json
