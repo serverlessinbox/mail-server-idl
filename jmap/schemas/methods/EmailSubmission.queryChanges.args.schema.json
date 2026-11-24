@@ -24,8 +24,8 @@
       }
     },
     "sinceQueryState": { "type": "string", "description": "The queryState to get changes since." },
-    "maxChanges": { "type": ["integer", "null"], "minimum": 1, "description": "Maximum number of changes to return." },
-    "upToId": { "$ref": "../core/types.schema.json#/$defs/Id", "description": "Stop reporting changes after this id." },
+    "maxChanges": { "type": ["integer", "null"], "minimum": 0, "maximum": 9007199254740991, "description": "Maximum number of changes to return." },
+    "upToId": { "type": ["string", "null"], "description": "Stop reporting changes after this id." },
     "calculateTotal": { "type": ["boolean", "null"], "description": "If true, return the new total count of query results." }
   },
   "required": ["accountId", "sinceQueryState"]

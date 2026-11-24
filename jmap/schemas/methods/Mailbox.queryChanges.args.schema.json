@@ -16,8 +16,8 @@
       "items": { "type": "object", "additionalProperties": true }
     },
     "sinceQueryState": { "type": "string", "minLength": 1, "description": "The queryState from the previous Mailbox/query or Mailbox/queryChanges response." },
-    "maxChanges": { "type": "integer", "minimum": 0, "description": "Maximum number of changes to return. If exceeded, hasMoreChanges will be true." },
-    "upToId": { "$ref": "../core/types.schema.json#/$defs/MailboxId", "description": "Return changes only up to and including this MailboxId." },
+    "maxChanges": { "type": ["integer", "null"], "minimum": 0, "maximum": 9007199254740991, "description": "Maximum number of changes to return. If exceeded, hasMoreChanges will be true." },
+    "upToId": { "type": ["string", "null"], "description": "Return changes only up to and including this MailboxId." },
     "calculateTotal": { "type": "boolean", "description": "If true, return the updated total count of results." }
   },
   "required": ["accountId", "sinceQueryState"]

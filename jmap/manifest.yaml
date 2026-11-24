@@ -5,7 +5,6 @@ capabilities:
   - urn:ietf:params:jmap:submission
   - urn:ietf:params:jmap:contacts
   - urn:ietf:params:jmap:principals
-  - https://specs.serverlessinbox.com/page-token
   - https://specs.serverlessinbox.com/websocket
   - https://specs.serverlessinbox.com/identity-extras
   - urn:ietf:params:jmap:sieve
@@ -92,11 +91,6 @@ methods:
     argsSchema: schemas/methods/Blob.copy.args.schema.json
     responseSchema: schemas/methods/Blob.copy.response.schema.json
 
-  - name: Thread/query
-    capability: urn:ietf:params:jmap:mail
-    argsSchema: schemas/methods/Thread.query.args.schema.json
-    responseSchema: schemas/methods/Thread.query.response.schema.json
-
   - name: Thread/changes
     capability: urn:ietf:params:jmap:mail
     argsSchema: schemas/methods/Thread.changes.args.schema.json
@@ -146,11 +140,6 @@ methods:
     capability: urn:ietf:params:jmap:mail
     argsSchema: schemas/methods/Mailbox.queryChanges.args.schema.json
     responseSchema: schemas/methods/Mailbox.queryChanges.response.schema.json
-
-  - name: Thread/queryChanges
-    capability: urn:ietf:params:jmap:mail
-    argsSchema: schemas/methods/Thread.queryChanges.args.schema.json
-    responseSchema: schemas/methods/Thread.queryChanges.response.schema.json
 
   - name: AddressBook/get
     capability: urn:ietf:params:jmap:contacts

@@ -24,8 +24,8 @@ The API contracts of ServerlessInbox, in machine-readable form. Every API is def
 
 ServerlessInbox adds two extensions. Each capability URI is also the address of its specification on [specs.serverlessinbox.com](https://specs.serverlessinbox.com):
 
-- [`https://specs.serverlessinbox.com/page-token`](https://specs.serverlessinbox.com/page-token): cursor-based pagination for `*/query`, for backends that cannot page by index.
 - [`https://specs.serverlessinbox.com/websocket`](https://specs.serverlessinbox.com/websocket): WebSocket push.
+- [`https://specs.serverlessinbox.com/identity-extras`](https://specs.serverlessinbox.com/identity-extras): vendor properties on `Identity`, such as `label`.
 
 `manifest.yaml` is the authoritative list of supported methods.
 

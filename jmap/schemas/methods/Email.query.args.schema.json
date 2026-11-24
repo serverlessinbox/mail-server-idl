@@ -11,13 +11,12 @@
       "description": "Sort criteria. Each object has a property name and isAscending flag. Defaults to date descending.",
       "items": { "type": "object", "additionalProperties": true }
     },
-    "position": { "type": "integer", "minimum": 0, "description": "Zero-based index of the first result to return. Cannot be combined with anchor." },
-    "anchor": { "type": ["string", "null"], "description": "EmailId to use as the anchor for pagination. The page starts at this email." },
-    "anchorOffset": { "type": "integer", "description": "Offset in results relative to the anchor. Negative values move backwards." },
-    "limit": { "type": "integer", "minimum": 0, "description": "Maximum number of EmailIds to return. Defaults to server maximum." },
+    "position": { "type": "integer", "minimum": -9007199254740991, "maximum": 9007199254740991, "description": "Zero-based index of the first id to return. A negative value is an offset from the end of the list (RFC 8620 section 5.5). Ignored when anchor is given." },
+    "anchor": { "type": ["string", "null"], "description": "An id. When given, position is ignored and the first id returned is at the index of this id in the results plus anchorOffset, clamped to 0; an id that is not in the results is the error anchorNotFound (RFC 8620 section 5.5)." },
+    "anchorOffset": { "type": "integer", "minimum": -9007199254740991, "maximum": 9007199254740991, "description": "Index of the first id to return relative to the index of the anchor; may be negative. Ignored without an anchor." },
+    "limit": { "type": ["integer", "null"], "minimum": 0, "maximum": 9007199254740991, "description": "Maximum number of EmailIds to return. Defaults to server maximum." },
     "calculateTotal": { "type": "boolean", "description": "If true, compute the total number of matching emails (may be slower)." },
-    "collapseThreads": { "type": "boolean", "description": "If true, return only the latest email per thread, de-duplicating results." },
-    "pageToken": { "type": ["string", "null"], "description": "Opaque cursor returned by a previous Email/query response. Pass to retrieve the next page of results. Mutually exclusive with position and anchor. See https://specs.serverlessinbox.com/page-token" }
+    "collapseThreads": { "type": "boolean", "description": "If true, return only the latest email per thread, de-duplicating results." }
   },
   "required": ["accountId"],
   "additionalProperties": true

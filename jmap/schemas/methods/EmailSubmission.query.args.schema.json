@@ -23,10 +23,10 @@
         "required": ["property"]
       }
     },
-    "position": { "type": ["integer", "null"], "description": "Zero-based index of the first result to return." },
-    "anchor": { "$ref": "../core/types.schema.json#/$defs/Id", "description": "Id of an item to anchor the result window on." },
-    "anchorOffset": { "type": ["integer", "null"], "description": "Offset relative to the anchor." },
-    "limit": { "type": ["integer", "null"], "minimum": 0, "description": "Maximum number of ids to return." },
+    "position": { "type": ["integer", "null"], "minimum": -9007199254740991, "maximum": 9007199254740991, "description": "Zero-based index of the first id to return. A negative value is an offset from the end of the list (RFC 8620 section 5.5). Ignored when anchor is given." },
+    "anchor": { "type": ["string", "null"], "description": "An id. When given, position is ignored and the first id returned is at the index of this id in the results plus anchorOffset, clamped to 0; an id that is not in the results is the error anchorNotFound (RFC 8620 section 5.5)." },
+    "anchorOffset": { "type": ["integer", "null"], "minimum": -9007199254740991, "maximum": 9007199254740991, "description": "Index of the first id to return relative to the index of the anchor; may be negative. Ignored without an anchor." },
+    "limit": { "type": ["integer", "null"], "minimum": 0, "maximum": 9007199254740991, "description": "Maximum number of ids to return." },
     "calculateTotal": { "type": ["boolean", "null"], "description": "If true, return the total count of results." }
   },
   "required": ["accountId"]

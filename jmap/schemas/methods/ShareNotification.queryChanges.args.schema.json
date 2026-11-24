@@ -11,8 +11,8 @@
       "items": { "type": "object", "additionalProperties": true }
     },
     "sinceQueryState": { "type": "string", "minLength": 1, "description": "The queryState from the previous ShareNotification/query or ShareNotification/queryChanges response." },
-    "maxChanges": { "type": "integer", "minimum": 0, "description": "Maximum number of changes to return. If exceeded, hasMoreChanges will be true." },
-    "upToId": { "$ref": "../core/types.schema.json#/$defs/ShareNotificationId", "description": "Return changes only up to and including this ShareNotificationId." },
+    "maxChanges": { "type": ["integer", "null"], "minimum": 0, "maximum": 9007199254740991, "description": "Maximum number of changes to return. If exceeded, hasMoreChanges will be true." },
+    "upToId": { "type": ["string", "null"], "description": "Return changes only up to and including this ShareNotificationId." },
     "calculateTotal": { "type": "boolean", "description": "If true, return the updated total count of results." }
   },
   "required": ["accountId", "sinceQueryState"]

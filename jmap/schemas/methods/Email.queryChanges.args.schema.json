@@ -5,15 +5,15 @@
   "type": "object",
   "properties": {
     "accountId": { "$ref": "../core/types.schema.json#/$defs/AccountId", "description": "The account to check for query changes." },
-    "filter": { "type": "object", "additionalProperties": true, "description": "Must match the filter used in the original Email/query call." },
+    "filter": { "type": ["object", "null"], "additionalProperties": true, "description": "Must match the filter used in the original Email/query call." },
     "sort": {
-      "type": "array",
+      "type": ["array", "null"],
       "description": "Must match the sort used in the original Email/query call.",
       "items": { "type": "object", "additionalProperties": true }
     },
     "sinceQueryState": { "type": "string", "minLength": 1, "description": "The queryState from the previous Email/query or Email/queryChanges response." },
-    "maxChanges": { "type": "integer", "minimum": 0, "maximum": 9007199254740991,"description": "Maximum number of changes to return. If exceeded, hasMoreChanges will be true." },
-    "upToId": { "$ref": "../core/types.schema.json#/$defs/EmailId", "description": "Return changes only up to and including this EmailId." },
+    "maxChanges": { "type": ["integer", "null"], "minimum": 0, "maximum": 9007199254740991,"description": "Maximum number of changes to return. If exceeded, hasMoreChanges will be true." },
+    "upToId": { "type": ["string", "null"], "description": "Return changes only up to and including this EmailId." },
     "calculateTotal": { "type": "boolean", "default": false, "description": "If true, the response includes the total number of results in the new query state." }
   },
   "required": ["accountId", "sinceQueryState"]
