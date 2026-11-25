@@ -27,6 +27,10 @@
     "onDestroyRemoveContents": {
       "type": "boolean",
       "description": "If true, also destroy all ContactCards in the address book. Default false."
+    },
+    "onSuccessSetIsDefault": {
+      "anyOf": [{ "$ref": "../core/types.schema.json#/$defs/AddressBookId" }, { "type": "null" }],
+      "description": "If an id is given, and all creates, updates and destroys succeed without error, the server tries to set this AddressBook as the default; a creation reference uses the creation id prefixed with #. An id not found, or a change the server does not permit, is ignored with no error (RFC 9610 section 2.3)."
     }
   },
   "required": ["accountId"]

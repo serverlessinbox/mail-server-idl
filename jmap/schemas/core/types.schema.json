@@ -382,7 +382,8 @@
         "name":      { "type": "string", "minLength": 1, "description": "New user-visible name for the mailbox." },
         "parentId":  { "anyOf": [{ "$ref": "#/$defs/MailboxId" }, { "type": "null" }], "description": "New parent mailbox id, or null to move to top-level." },
         "role":      { "anyOf": [{ "type": "string" }, { "type": "null" }], "description": "New role (an IANA IMAP mailbox name attribute, lowercase), or null for none." },
-        "sortOrder": { "type": "integer", "minimum": 0, "description": "New client sort-order hint." }
+        "sortOrder": { "type": "integer", "minimum": 0, "description": "New client sort-order hint." },
+        "isSubscribed": { "type": "boolean", "description": "Whether the user wishes to see this mailbox in their client (RFC 8621 section 2; stored per user)." }
       }
     },
 

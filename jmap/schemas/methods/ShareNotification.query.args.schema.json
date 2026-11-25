@@ -2,10 +2,15 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://serverlessinbox.com/schemas/jmap/methods/ShareNotification.query.args.schema.json",
   "title": "ShareNotification/query args",
-  "description": "Arguments for ShareNotification/query (RFC 9670 §4.4). Returns an ordered list of ShareNotification ids.",
+  "description": "Arguments for ShareNotification/query (RFC 9670 §3.4). Returns an ordered list of ShareNotification ids.",
   "type": "object",
   "properties": {
     "accountId": { "$ref": "../core/types.schema.json#/$defs/AccountId", "description": "The account to query share notifications from." },
+    "filter": {
+      "type": ["object", "null"],
+      "description": "Filter conditions (RFC 8620 section 5.5): a FilterOperator (operator AND, OR or NOT, and conditions) or a FilterCondition, or null for all. FilterCondition properties, all optional: after (UTCDate|null), before (UTCDate|null), objectType (String), objectAccountId (Id) (RFC 9670 section 3.4.1).",
+      "additionalProperties": true
+    },
     "sort": {
       "type": ["array", "null"],
       "description": "Sort criteria. Each Comparator has a property (e.g. created) and optional isAscending (default true).",
