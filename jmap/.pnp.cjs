@@ -2288,7 +2288,7 @@ const RAW_RUNTIME_STATE =
     ]],\
     ["es5-ext", [\
       ["npm:0.10.64", {\
-        "packageLocation": "../../../../../../.yarn/berry/cache/es5-ext-npm-0.10.64-c30cdc3d60-10c0.zip/node_modules/es5-ext/",\
+        "packageLocation": "./.yarn/unplugged/es5-ext-npm-0.10.64-c30cdc3d60/node_modules/es5-ext/",\
         "packageDependencies": [\
           ["es5-ext", "npm:0.10.64"],\
           ["es6-iterator", "npm:2.0.3"],\

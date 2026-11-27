@@ -5,7 +5,6 @@ capabilities:
   - urn:ietf:params:jmap:submission
   - urn:ietf:params:jmap:contacts
   - urn:ietf:params:jmap:principals
-  - urn:ietf:params:jmap:principals:owner
   - https://specs.serverlessinbox.com/websocket
   - https://specs.serverlessinbox.com/identity-extras
   - urn:ietf:params:jmap:sieve
